@@ -4,10 +4,11 @@
 #include <string.h>
 #include <opensm_libio.h>
 #include <libclient.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
+//#include <netinet/in.h>
+//#include <netdb.h>
+//#include <sys/socket.h>
+#include <winsock2.h>
+//#include <arpa/inet.h>
 
 int main(int argc,char *argv[]){
 	if(argc != 2)

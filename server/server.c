@@ -9,11 +9,13 @@
 #include <strings.h>
 #include <errno.h>
 #include <dirent.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
+#include <winsock2.h>
+#include <winsock.h>
+#include <windows.h>
+//#include <netinet/in.h>
 #include <sys/types.h>
-#include <arpa/inet.h>
-#include <sys/select.h>
+//#include <arpa/inet.h>
+//#include <sys/select.h>
 #include <opensm_libio.h>
 #include <libmisc.h>
 #include <libuser.h>
@@ -26,6 +28,7 @@ int main(int argc,char *argv[]){
 		usage(argv[0]);
 		return -1;
 	}
+	printf("[WRN]Very buggy no checks in place either! Will likely not work as intended.Use linux version if at all possible\n");
 	FILE *f = fopen(argv[1],"r");
 	if(!f){
 		perror("Error opening file");
@@ -60,7 +63,7 @@ int main(int argc,char *argv[]){
 	address.sin_port = htons(2718);
 	address.sin_addr.s_addr = INADDR_ANY;;
 	printf("Binding port\n");
-	if(bind(es_socket,(struct sockaddr *)&address,sizeof(address)) < 0){
+	if(bind(es_socket,(struct sockaddr *)&address,sizeof(address)) < 0 || 1){
 		perror("Couldn't bind to port");
 		return -1;
 	}
@@ -68,7 +71,7 @@ int main(int argc,char *argv[]){
 	printf("Listening\n");
 	if(listen(es_socket,3) < 0){
 		perror("Failed to listen");
-		return -1;
+	//	return -1;
 	}
 	int sd;
 	int activity;
@@ -90,9 +93,9 @@ int main(int argc,char *argv[]){
 			printf("Socket error");
 		}
 		if(FD_ISSET(es_socket,&rfds)){
-			new_socket = accept(es_socket,(struct sockaddr *)&address,(socklen_t *)&addrlen);
+			new_socket = accept(es_socket,(struct sockaddr *)&address,&addrlen);
 			if(new_socket < 0){
-				printf("Error accepting\n");
+				perror("Error accepting");
 				return -1;
 			}
 			printf("Got connection!\n");
@@ -144,7 +147,7 @@ int main(int argc,char *argv[]){
 			int nametaken = 0;
 			int err = 0;
 			while((ent = readdir(d))){
-				if(ent->d_type == DT_REG){
+				if(1){
 					FILE *tmpf = fopen(path,"rb");
 					if(!tmpf){
 						int errsv = errno;
@@ -224,9 +227,9 @@ int main(int argc,char *argv[]){
 				int succ = LOGIN_SUCC;
 				send(new_socket,&succ,1,0);
 			}
-			pid_t pid;
-			pid = fork();
-			if(pid == 0){
+//			pid_t pid;
+//			pid = fork();
+			if(1){
 				while(1){
 					int cmd = 0x7F;
 					printf("Reciving command\n");
@@ -251,7 +254,7 @@ int main(int argc,char *argv[]){
 						}
 						struct dirent *ent;
 						while((ent = readdir(d)) != 0){
-							if(ent->d_type == DT_REG){
+							if(1){
 								char *tmppath = malloc(1024);
 								sprintf(tmppath,"%s/%s",cfg->user_path,ent->d_name);
 								FILE *f = fopen(tmppath,"rb");
@@ -335,7 +338,7 @@ int main(int argc,char *argv[]){
 						}
 						struct dirent *ent;
 						while((ent = readdir(d)) != 0){
-							if(ent->d_type == DT_REG){
+							if(1){
 								char *path = malloc(1024);
 								sprintf(path,"%s/%s",cfg->story_path,ent->d_name);
 								FILE *tmpfile = fopen(path,"rb");
@@ -362,6 +365,8 @@ int main(int argc,char *argv[]){
 						}
 						send(new_socket,&end,1,0);
 					}else if(cmd == CMD_WRITE){
+						int sendb = 0x0f,resvb;
+						int zero = 0;
 						printf("Got command write!\n");
 						int b = 0;
 						char *fpath = malloc(1024);
@@ -386,8 +391,6 @@ int main(int argc,char *argv[]){
 							resb = 5;
 						else
 							resb = 1;
-						int tmpb = 0x0f;
-						send(new_socket,&tmpb,1,0);
 						send(new_socket,&resb,1,0);
 						if(resb != 5){
 							printf("Invalid name!\n");
@@ -412,6 +415,7 @@ int main(int argc,char *argv[]){
 						printf("File is %z" PRIu32" bytes\n",size);
 						c = 0;
 						i = 0;
+						int _sendb = 0x0f,_recvb;
 						while(i < size){
 							recv(new_socket,&c,1,0);
 							putc(c,f);

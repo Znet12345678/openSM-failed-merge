@@ -1,8 +1,8 @@
-CC = gcc
-AR = ar
+CC = i686-w64-mingw32-gcc
+AR = i686-w64-mingw32-ar
 OBJS = obj/libio.o obj/libmisc.o obj/libclient.o obj/libuser.o obj/libsh.o
-LDFLAGS =  -L${PWD} -Wl,-rpath=${PWD}
-CFLAGS = -Werror -Iinclude -O2 -g -fPIC -std=gnu99
+LDFLAGS =  -L${PWD} -Wl,-rpath=${PWD} -lws2_32
+CFLAGS = -Iinclude -O2 -g -fPIC -std=gnu99
 PREFIX=/usr/local
 all:
 	@echo "CC libio.o"
@@ -17,28 +17,28 @@ all:
 	@${CC} -c lib/libsh.c -o obj/libsh.o ${CFLAGS}
 	@echo "AR libsm.a"
 	@${AR} rcs libsm.a ${OBJS}
-	@echo "LDCC libsm.so"
-	@${CC} -o libsm.so ${OBJS} -shared ${LDFLAGS} ${CFLAGS}
-	@echo "LDCC server.proto"
-	@${CC}  server/server.c -o server/server.proto ${CFLAGS} ${LDFLAGS} -lsm
-	@echo "LDCC client.proto"
-	@${CC} client/client.c -o client/client.proto ${CFLAGS} ${LDFLAGS} -lsm
-	@echo "LDCC tools_dDat"
-	@${CC} ${OBJS} src/tools_dDat.c -o tools_dDat ${LDFLAGS} ${CFLAGS}
-	@echo "LDCC tools_wfDat"
-	@${CC} ${OBJS} src/tools_wfDat.c -o tools_wfDat ${LDFLAGS} ${CFLAGS}
-	@echo "LDCC tools_dfDat"
-	@${CC} ${OBJS} src/tools_dfDat.c -o tools_dfDat ${LDFLAGS} ${CFLAGS}
-	@echo "LDCC tools_wDat"
-	@${CC} ${OBJS} src/tools_wDat.c -o tools_wDat ${LDFLAGS} ${CFLAGS}
-	@echo "LDCC dev_dump_fDat"
-	@${CC} ${OBJS} src/dump_fDat.c -o dev_dump_fDat ${LDFLAGS} ${CFLAGS}
-	@echo "LDCC dev_send_txt"
-	@${CC} ${OBJS} src/dev_send_txt.c -o dev_send_txt ${LDFLAGS} ${CFLAGS}
-	@echo "LDCC client_txt_generic"
-	@${CC} ${LDFLAGS} ${CFLAGS} -o client_txt_generic src/client_txt_generic.c -lsm
-	@echo "LDCC dump_serverconf"
-	@${CC} ${LDFLAGS} ${CFLAGS} -o dump_serverconf debug/dump_serverconf.c ${OBJS}
+	@echo "LDCC libsm.dll"
+	@${CC} -o libsm.dll ${OBJS} -shared ${LDFLAGS} ${CFLAGS}
+	@echo "LDCC server.proto.exe"
+	@${CC}  server/server.c -o server/server.proto.exe ${CFLAGS} ${LDFLAGS} -lsm
+	@echo "LDCC client.proto.exe"
+	@${CC} client/client.c -o client/client.proto.exe ${CFLAGS} ${LDFLAGS} -lsm
+	@echo "LDCC tools_dDat.exe"
+	@${CC} ${OBJS} src/tools_dDat.c -o tools_dDat.exe ${LDFLAGS} ${CFLAGS}
+	@echo "LDCC tools_wfDat.exe"
+	@${CC} ${OBJS} src/tools_wfDat.c -o tools_wfDat.exe ${LDFLAGS} ${CFLAGS}
+	@echo "LDCC tools_dfDat.exe"
+	@${CC} ${OBJS} src/tools_dfDat.c -o tools_dfDat.exe ${LDFLAGS} ${CFLAGS}
+	@echo "LDCC tools_wDat.exe"
+	@${CC} ${OBJS} src/tools_wDat.c -o tools_wDat.exe ${LDFLAGS} ${CFLAGS}
+	@echo "LDCC dev_dump_fDat.exe"
+	@${CC} ${OBJS} src/dump_fDat.c -o dev_dump_fDat.exe ${LDFLAGS} ${CFLAGS}
+	@echo "LDCC dev_send_txt.exe"
+	@${CC} ${OBJS} src/dev_send_txt.c -o dev_send_txt.exe ${LDFLAGS} ${CFLAGS}
+	@echo "LDCC client_txt_generic.exe"
+	@${CC} -o client_txt_generic src/client_txt_generic.c ${LDFLAGS} ${CFLAGS} -lsm
+	@echo "LDCC dump_serverconf.exe"
+	@${CC} ${CFLAGS} -o dump_serverconf.exe debug/dump_serverconf.c ${OBJS} ${LDFLAGS}
 	@echo "TEST tests"
 	@make -C tests tests
 install:

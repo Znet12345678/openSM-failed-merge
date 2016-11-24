@@ -3,8 +3,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <opensm_libio.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
+#include <winsock2.h>
+//#include <netinet/in.h>
 #include <libclient.h>
 int main(int argc,char *argv[]){
 	if(argc != 2)
